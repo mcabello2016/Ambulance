@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Workshop</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="bootstrap-4/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class=" navbar-brand " href="index.html">Emergency</a>
+		<button class="navbar-toggler " type="button " data-toggle="collapse " data-target="#navbarSupportedContent " aria-controls="navbarSupportedContent " aria-expanded="false " aria-label="Toggle navigation ">
+        <span class="navbar-toggler-icon "></span>
+      </button>
+
+		<div class="collapse navbar-collapse " id="navbarSupportedContent ">
+			<ul class="navbar-nav mr-auto ">
+				<li class="nav-item active ">
+					<a class="nav-link " href="search_patient.html ">Patient <span class="sr-only">(current)</span></a>
+				</li>
+				<li class="nav-item ">
+					<a class="nav-link " href="search_observation.html ">Observation </a>
+				</li>
+				<li class="nav-item ">
+					<a class="nav-link " href="CDA_viewer.html">CDA </a>
+				</li>
+				<li class="nav-item ">
+					<a class="nav-link " href="chart.html">Chart </a>
+				</li>
+			</ul>
+			<form class="form-inline my-2 my-lg-0 ">
+				<input class="form-control mr-sm-2 " type="text " placeholder="Search " aria-label="Search ">
+				<button class="btn btn-outline-success my-2 my-sm-0 " type="submit ">Search</button>
+			</form>
+		</div>
+	</nav>
+	<br>
+	<br>
+
+	<div class="container">
+		<h2>Patient</h2>
+		<div class="form-group">
+
+			<h1 id="lbl-patient-given">Given</h1>
+			<h1 id="lbl-patient-family">Familyname</h1>
+			<h1 id="lbl-patient-birthday">Birthdate</h1>
+
+		</div>
+
+		<br>
+		<!--
+		<input type="submit" accept="image/*" class="btn btn-primary" onClick="loadList();" value="Search">
+		-->
+
+		<h2>Conditions</h2>
+
+
+		<table id="condition-table" class="table table-striped table-responsive">
+			<thead class="thead-inverse">
+				<tr>
+					<th>id</th>
+					<th>Display name</th>
+					<th>Snomed CT</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+		<br>
+
+
+		<h2>Encounters</h2>
+		<table id="encounter-table" class="table table-stripped table-responsive">
+			<thead class="thead-inverse">
+				<tr>
+					<th>id</th>
+					<th>Status</th>
+					<th>Start</th>
+					<th>Provider</th>
+					<th>Show detail</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+
+	<script src="lib/jquery/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+	<script src="lib/fhir-client/fhir-client.min.js"></script>
+	<script src="js/config_FHIR.js"></script>
+	<script src="js/fhir-util.js"></script>
+
+
+	<script>
+		"use strict";
+
+		var loadList = function() {
+
+			$("#conditions-table tbody").empty();
+			$("#encounters-table tbody").empty();
+
+			var smart = FHIR.client(config);
+
+			// recibir Id del Paciente y consultar por sus datos personales
+			var patientId = 25005;
+
+			//patiendId = ;
+			//patientId = 24982;
+			//patientId = 25005;
+			//99997777, patiendId:30436, Waltd Disney
+
+			var patientFound = false;
+			var encountersFound = false;
+			var conditionsFound = false;
+
+			patientFound = fxBuscarPaciente(patientId);
+
+			if (patientFound) {
+				fxBuscarConditions(patientId);
+
+				conditionsFound = fxBuscarConditions(patientId);
+
+				encountersFound = fxBuscarEncounters(patientId);
+
+			} else {
+				alert("El paciente buscado no se encuentra");
+			}
+
+		}; //fin loadlist
+
+
+
+
+
+
+
+
+
+		//funciones
+		function fxBuscarPaciente(patientId) {
+			var patientQueryObject = {
+				_id: patientId,
+				_sort: "-_lastUpdated"
+			};
+			var smart = FHIR.client(config);
+
+			smart.api.search({
+					type: "Patient",
+					query: patientQueryObject
+				})
+				.then(function(response) {
+
+					$("#lbl-patient-given").text(response.data.entry[0].resource.name[0].given[0]);
+					$("#lbl-patient-family").text(response.data.entry[0].resource.name[0].family);
+					$("#lbl-patient-birthday").text(response.data.entry[0].resource.birthDate);
+				});
+			return true;
+
+		};
+
+		var fxDisplayObservations = function(idEncounter) {
+			console.log("DisplayObservations" + idEncounter);
+
+			var observationQueryObject = {
+				context: idEncounter,
+				_sort: "-_id"
+			};
+
+			var smart = FHIR.client(config);
+
+			smart.api.search({
+					type: "Observation",
+					query: observationQueryObject
+				})
+				.then(function(response) {
+					console.log(response);
+
+					var obsId;
+					var obsStatus;
+					var obsStart;
+					var obsEnd;
+					var obsCode;
+					var obsText;
+					var obsValue;
+					var obsUnit;
+
+					$('#' + 'contenedor' + idEncounter).empty();
+
+					var cadena;
+					cadena = '<h3>Blood pressure Observations </h3>';
+					cadena = cadena + '<table id="t1" class="table table-striped table-responsive" thead class="thead-inverse">';
+					cadena = cadena + '<tr>';
+					cadena = cadena + '<th>Id</th>';
+					cadena = cadena + '<th>Status</th>';
+					cadena = cadena + '<th>Start</th>';
+					//cadena = cadena + '<th>End</th>';
+					cadena = cadena + '<th>Code</th>';
+					cadena = cadena + '<th>Text</th>';
+					cadena = cadena + '<th>Value</th > ';
+					cadena = cadena + '<th>Units</th>';
+					cadena = cadena + '</tr>';
+					cadena = cadena + '</thead>';
+					cadena = cadena + '<tbody>';
+					cadena = cadena + '</tbody';
+					cadena = cadena + '</table>';
+
+					cadena = cadena + '<p></p>'
+
+					cadena = cadena + '<table id="t2" class="table table-striped table-responsive" thead class="thead-inverse">';
+					cadena = cadena + '<h3>Hearth rate Observations </h3>';
+					cadena = cadena + '<tr>';
+					cadena = cadena + '<th>Id</th>';
+					cadena = cadena + '<th>Status</th>';
+					cadena = cadena + '<th>Start</th>';
+					//cadena = cadena + '<th>Code</th>';
+					cadena = cadena + '<th>Text</th>';
+					cadena = cadena + '<th>Value</th > ';
+					cadena = cadena + '<th>Units</th>';
+					cadena = cadena + '</tr>';
+					cadena = cadena + '</thead>';
+					cadena = cadena + '<tbody>';
+					cadena = cadena + '</tbody';
+					cadena = cadena + '</table>';
+
+					$(".abc").hide();
+					$('#' + 'contenedor' + idEncounter).append(cadena);
+					$('#' + 'contenedor' + idEncounter).show();
+
+					if (response.data.total != "0") {
+
+						for (var i = 0; i < (response.data.entry.length); i++) {
+							//console.log(i);
+
+							if (typeof response.data.entry[i].resource.code.coding != "undefined") {
+								if (response.data.entry[i].resource.code.coding[0].code == "85354-9") {
+									console.log(i + response.data.entry[i].resource.component[0].code.coding["0"].display);
+									console.log(i + response.data.entry[i].resource.component[1].code.coding["0"].display);
+
+									obsId = '<td>' + (response.data.entry[i].resource.id || '-') + '</td>';
+									obsStatus = '<td>' + (response.data.entry[i].resource.status || '-') + '</td>';
+									obsStart = '<td>' + (response.data.entry[i].resource.meta.lastUpdated || '-') + '</td>';
+									//obsEnd = '<td>' + (response.data.entry[i].resource.meta.lastUpdated || '-') + '</td>';
+
+									obsCode = '<td>' + (response.data.entry[i].resource.component[0].code.coding[0].code + '<br>' + response.data.entry[i].resource.component[1].code.coding[0].code || '-') + '</td>';
+									obsText = '<td>' + (response.data.entry[i].resource.component[0].code.coding[0].display + '<br>' + response.data.entry[i].resource.component[1].code.coding[0].display || '-') + '</td>';
+									obsValue = '<td>' + (response.data.entry[i].resource.component[0].valueQuantity.value + '/' + response.data.entry[i].resource.component[1].valueQuantity.value || '-') + '</td>';
+									obsUnit = '<td>' + (response.data.entry[i].resource.component[0].valueQuantity.unit || '-') + '</td>';
+
+									$("#" + "t1").find("tbody").append("<tr>" + obsId + obsStatus + obsStart + obsCode + obsText + obsValue + obsUnit + "</tr>");
+
+								}
+							}
+
+							if (typeof response.data.entry[i].resource.identifier != "undefined") {
+								if (response.data.entry[i].resource.identifier["0"].value = "133") {
+									console.log(i + response.data.entry[i].resource.identifier["0"].type.text)
+
+
+								}
+							}
+
+							if (typeof response.data.entry[i].resource.code != "undefined") {
+								if (response.data.entry[i].resource.code.text == "Heart rate") {
+									console.log(i + response.data.entry[i].resource.code.text);
+
+
+									obsId = '<td>' + (response.data.entry[i].resource.id || '-') + '</td>';
+									obsStatus = '<td>' + (response.data.entry[i].resource.status || '-') + '</td>';
+									obsStart = '<td>' + (response.data.entry[i].resource.effectiveDateTime || '-') + '</td>';
+									obsText = '<td>' + (response.data.entry[i].resource.code.text || '-') + '</td>';
+									obsValue = '<td>' + (response.data.entry[i].resource.valueQuantity.value || '-') + '</td>';
+									obsUnit = '<td>' + (response.data.entry[i].resource.valueQuantity.unit || '-') + '</td>';
+									$("#" + "t2").find("tbody").append("<tr>" + obsId + obsStatus + obsStart + obsText + obsValue + obsUnit + "</tr>");
+								}
+							}
+						}
+					}
+				});
+		}; //fin-fx
+
+
+
+		var fxBuscarConditions = function(patientId) {
+			console.log("*conditions" + patientId);
+
+			var smart = FHIR.client(config);
+
+			var conditionQueryObject = {
+				subject: patientId,
+				_sort: "-_lastUpdated"
+			};
+
+			smart.api.search({
+					type: "Condition",
+					query: conditionQueryObject
+				})
+				.then(function(response) {
+
+					console.log(response);
+
+					var vId;
+					var vDisplay;
+					var vCode;
+
+					if (response.data.total != "0") {
+
+						for (var i = 0; i < (response.data.entry.length); i++) {
+							vId = response.data.entry[i].resource.id;
+							vDisplay = response.data.entry[i].resource.code.coding["0"].display;
+							vCode = response.data.entry[i].resource.code.coding["0"].code
+
+							appendRow(vId, vDisplay, vCode);
+						}
+					} else {
+						appendRow('-', '-', '-', '-');
+					}
+				});
+		}; //fin-fx
+
+
+		var fxBuscarEncounters = function(patientId) {
+			console.log("*encounters" + patientId);
+			// buscar los Encounters a partir del ID del paciente
+
+			var smart = FHIR.client(config);
+
+			var encounterQueryObject = {
+				subject: patientId,
+				_sort: "-status"
+			};
+
+			smart.api.search({
+					type: "Encounter",
+					query: encounterQueryObject
+				})
+				.then(function(response) {
+					console.log(response);
+
+					var encId;
+					var encStatus;
+					var encStart;
+					var encProvider;
+
+					if (response.data.total != "0") {
+						//bucle for para completar tabla de encounter
+						for (var i = 0; i < (response.data.entry.length); i++) {
+
+							encId = response.data.entry[i].resource.id;
+							encStatus = response.data.entry[i].resource.status;
+							encStart = response.data.entry[i].resource.period.start;
+							encProvider = response.data.entry[i].resource.serviceProvider.reference;
+							appendRowEncounter(encId, encStatus, encStart, encProvider);
+						}
+					} else {
+						appendRowEncounter('-', '-', '-', '-');
+					}
+				});
+
+		};
+
+
+		var appendRow = function(id, display, snomed) {
+
+			$("#condition-table").find("tbody").append("<tr><td><a href=search_observation.html?" + id + ">" + (id || '-') + "</a></td><td>" + (display || '-') + "</td><td>" + (snomed || '-') + "</td></tr>")
+		};
+
+
+		var appendRowEncounter = function(idEncounter, status, start, provider) {
+
+			// crear la tabla y div dinamicamente.
+			var c1 = "<td>" + "<a href=search_observation.html?" + idEncounter + ">" + (idEncounter || '-') + "</a></td>";
+			var c2 = "<td>" + (status || '-') + "</td>";
+			var c3 = "<td>" + (start || '-') + "</td>";
+			var c4 = "<td>" + (provider || '-') + "</td>";
+			var c5 = "<td>" + '<input type="button" class="btn btn-primary" onClick="fxDisplayObservations(' + idEncounter + ');" id="btAdd" value="+" class="bt"/>' + "</td>"
+			var c6 = "<td colspan=5>" + "<div class='abc' id=contenedor" + idEncounter + "></div></td>";
+
+			// crear la tabla con los Div's embebidos
+			$("#encounter-table").find("tbody").append("<tr>" + c1 + c2 + c3 + c4 + c5 + "</tr>");
+			$("#encounter-table").find("tbody").append("<tr>" + c6 + "</tr>");
+		};
+
+		var appendRowObservation = function(id) {
+			var c1 = "<td>" + (id || '-') + "</td>";
+			$("encounter-table").find("tbody").append("<td>" + (id || '-') + "</td>");
+		};
+
+
+
+		$(document).ready(function() {
+			loadList();
+		});
+
+		//$("#submit").click(loadList());
+
+	</script>
+
+</body>
+
+</html>

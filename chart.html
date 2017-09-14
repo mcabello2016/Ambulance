@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Workshop</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-4/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class=" navbar-brand " href="index.html">Emergency</a>
+        <button class="navbar-toggler " type="button " data-toggle="collapse " data-target="#navbarSupportedContent " aria-controls="navbarSupportedContent " aria-expanded="false " aria-label="Toggle navigation ">
+        <span class="navbar-toggler-icon "></span>
+      </button>
+
+        <div class="collapse navbar-collapse " id="navbarSupportedContent ">
+            <ul class="navbar-nav mr-auto ">
+                <li class="nav-item  ">
+                    <a class="nav-link " href="search_patient.html ">Patient <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link " href="search_observation.html ">Observation </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link " href="CDA_viewer.html">CDA </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link " href="chart.html">Chart </a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0 ">
+                <input class="form-control mr-sm-2 " type="text " placeholder="Search " aria-label="Search ">
+                <button class="btn btn-outline-success my-2 my-sm-0 " type="submit ">Search</button>
+            </form>
+        </div>
+    </nav>
+    <br>
+    <br>
+
+    <div class="container">
+        <script src="lib/jquery/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+        <script src="js/Chart.js"></script>
+        <script src="js/Chart.min.js"></script>
+        <script src="lib/fhir-client/fhir-client.min.js"></script>
+        <script src="js/config_FHIR.js"></script>
+        <script src="js/fhir-util.js"></script>
+
+        <h4>Patient Information</h4>
+        <table id="patient-table" class="table table-striped table-responsive ">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>id</th>
+                    <th>Given Name</th>
+                    <th>Family Name</th>
+                    <th>Date of birth</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+        <br/>
+        <br/>
+
+        <div class="chart-container" style="width:95%;">
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <script>
+            var ctx = document.getElementById("myChart").getContext('2d');
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [1, 2, 3, 4, 5, 6],
+                    datasets: [{
+                            label: "Systolic",
+                            backgroundColor: '#ff6384',
+                            borderColor: '#ff6384',
+                            pointStyle: 'circle',
+                            pointRadius: 5,
+                            lineTension: 0.2,
+                            fill: false,
+                            data: [120, 129, 115, 140, 125, 118]
+                        },
+                        {
+                            backgroundColor: '#81d8d0',
+                            borderColor: '#81d8d0',
+                            borderDash: [5, 5],
+                            pointStyle: 'line',
+                            pointRadius: 5,
+                            lineTension: 0,
+                            fill: false,
+                            data: [120, 120, 120, 120, 120, 120]
+                        },
+                        {
+                            label: "Diastolic",
+                            backgroundColor: '#36a2eb',
+                            borderColor: '#36a2eb',
+                            pointStyle: 'circle',
+                            pointRadius: 5,
+                            lineTension: 0.2,
+                            fill: false,
+                            data: [60, 68, 65, 80, 75, 70]
+                        },
+                        {
+                            backgroundColor: '#81d8d0',
+                            borderColor: '#81d8d0',
+                            borderDash: [5, 5],
+                            pointStyle: 'line',
+                            pointRadius: 5,
+                            lineTension: 0,
+                            fill: false,
+                            data: [60, 60, 60, 60, 60, 60]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        fontSize: 25,
+                        text: "Blood Pressure"
+                    },
+                    legend: {
+                        display: false,
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time unit'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                min: 40,
+                                max: 150
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'mm[Hg]'
+                            }
+                        }]
+                    }
+                }
+            });
+
+
+            //Patient Information Search and Table
+
+            var loadList = function() {
+                var xs = "0";
+                var x = location.search;
+                if (x.length != "0") {
+                    xs = x.slice(1);
+                } else {
+                    var smart = FHIR.client(config);
+                    var queryObject = {
+                        _sort: "-_lastUpdated"
+                    };
+
+                    smart.api.search({
+                            type: "Patient",
+                            query: queryObject
+                        })
+                        .then(function(response) {
+
+                            if (response.data.total != "0") {
+                                xs = (response.data.entry[0].resource.id).toString();
+                                processPatient(xs);
+
+                            }
+                        });
+                }
+            };
+
+            var processPatient = function(id) {
+                $("#patient-table tbody").empty();
+
+                var smart = FHIR.client(config);
+                var patientId = $("#patientId").val();
+
+                var queryObjectPatient = {
+                    _id: id
+                };
+
+                smart.api.search({
+                        type: "Patient",
+                        query: queryObjectPatient
+                    })
+                    .then(function(response) {
+                        // Handle response for Patient Information
+                        console.log(response);
+                        var i = 0;
+                        for (i = 0; i < response.data.total; i++) {
+                            appendRowPatient(response.data.entry[i].resource.id, response.data.entry[i].resource.name[0].given[0], response.data.entry[i].resource.name[0].family, response.data.entry[i].resource.birthDate);
+                        }
+                    });
+            }
+
+            var appendRowPatient = function(id, given, family, dateOfBirth) {
+                $("#patient-table").find("tbody").append("<tr><td>" + (id || '-') + "</td><td>" + (given || '-') + "</td><td>" + (family || '-') + "</td><td>" + (dateOfBirth || '-') + "</td></tr>")
+            };
+
+            $(document).ready(function() {
+                loadList();
+            });
+
+        </script>
+    </div>
+
+
+</body>
+
+</html>

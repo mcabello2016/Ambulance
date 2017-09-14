@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Workshop</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap-4/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class=" navbar-brand " href="index.html">Emergency</a>
+        <button class="navbar-toggler " type="button " data-toggle="collapse " data-target="#navbarSupportedContent " aria-controls="navbarSupportedContent " aria-expanded="false " aria-label="Toggle navigation ">
+        <span class="navbar-toggler-icon "></span>
+      </button>
+
+        <div class="collapse navbar-collapse " id="navbarSupportedContent ">
+            <ul class="navbar-nav mr-auto ">
+                <li class="nav-item ">
+                    <a class="nav-link " href="search_patient.html ">Patient <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link " href="search_observation.html ">Observation </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link " href="CDA_viewer.html">CDA </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link " href="chart.html">Chart </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link " href="vital_signs.html">Vital signs </a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0 ">
+                <input class="form-control mr-sm-2 " type="text " placeholder="Search " aria-label="Search ">
+                <button class="btn btn-outline-success my-2 my-sm-0 " type="submit ">Search</button>
+            </form>
+        </div>
+    </nav>
+    <br>
+    <br>
+
+    <div class="container">
+        <div class="container text-center">
+            <h2>Emergency App</h2>
+            <br>
+            <br>
+        </div>
+        <div class="row justify-content-around">
+            <div class="col-2">
+                <figure>
+                    <a href="search_patient.html"><img src="/img/patient.png" class="figure-img img-fluid rounded float-left" alt="Patient Information"></a>
+                    <a href="search_patient.html">
+                        <figcaption class="figure-caption text-center">Patient</figcaption>
+                    </a>
+                </figure>
+            </div>
+            <div class="col-2">
+                <figure>
+                    <a href="search_observation.html"><img src="img/observation.png" class="figure-img img-fluid rounded float-right" alt="Observation Information"></a>
+                    <a href="search_observation.html">
+                        <figcaption class="figure-caption text-center">Observation</figcaption>
+                    </a>
+                </figure>
+            </div>
+            <div class="col-2">
+                <figure>
+                    <a href="CDA_viewer.html"><img src="img/CDA.png" class="figure-img img-fluid rounded float-center" alt="CDA Viewer"></a>
+                    <a href="CDA_viewer.html">
+                        <figcaption class="figure-caption text-center">CDA Viewer</figcaption>
+                    </a>
+                </figure>
+            </div>
+        </div>
+        <div class="row justify-content-around">
+            <div class="col-2">
+                <figure class="figure">
+                    <a href="chart.html"><img src="/img/chartjs.svg" class="figure-img img-fluid rounded float-center" alt="Chart Information"></a>
+                    <a href="chart.html">
+                        <figcaption class="figure-caption text-center">Chart</figcaption>
+                    </a>
+                </figure>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
